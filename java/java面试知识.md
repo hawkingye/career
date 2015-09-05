@@ -1,15 +1,21 @@
 ###JAVA基础知识
 ####Throwable Java异常处理 
-Java异常都继承自Throwable接口，可分为Error(如OOM等)和Exception，其中Exception又包括RuntimeException和除RuntimeException的异常，RuntimeException(NullPointer、ArrayIndexOutOfBoundsException等等)也称为unchecked Exception即非检查异常，程序中应该减少对该异常的捕获，出现该异常应该定位程序出问题的原因。其他的Exception也称为checked Exception如果没有捕获会导致编译不通过等。
+Java异常都继承自Throwable接口，可分为Error(如OOM等)和Exception，其中Exception又包括RuntimeException(unchecked exception)和除RuntimeException的异常(checked exception)，常见的RuntimeException如下：  
+NullPointerException  
+ArrayIndexOutOfBoundsException  
+IllegalArgumentException  
+IllegalStateException  
+
+通常由用户try...catch来捕获checkedException. 通过RuntimeException也称为unchecked Exception即非检查异常，程序中应该减少对该异常的捕获，出现该异常应该定位程序出问题的原因。其他的Exception也称为checked Exception如果没有捕获会导致编译不通过等。
 ####流
 字节流：InputStream和OutputStream  
 字符流：Reader和Writer 
 ####容器 
 **HashMap和HashTable的区别**   
-1.继承不同HashMap继承AbstractMap而HashTable继承Dictionary。
+1.继承不同HashMap继承AbstractMap而HashTable继承Dictionary。  
 2.HashTable是线程安全的，而HashMap不是线程安全的  
-3.Hashtable中key和value都不允许为null，而HashMap可以允许只有一个key为null
-4.两个遍历方式的内部实现上不同。都可以使用Iterator，但历史原因Hashtable还可以使用Enumeration方式。  
+3.Hashtable中key和value都不允许为null，而HashMap可以允许key或者value为null
+4.两个遍历方式的内部实现上不同。都可以使用Iterator，但历史原因Hashtable还可以使用Enumeration方式  
 5.HashTable直接使用对象的hashCode，而HashMap需要重新计算hash值  
 6.HashMap的初始容量为16，而HashTable为11，且HashMap的扩容方式是每次增长2倍，而HashTable每次增长2倍+1  
 **HashMap和ConcurrentHashMap的区别**  
@@ -18,22 +24,29 @@ Java异常都继承自Throwable接口，可分为Error(如OOM等)和Exception，
 3.ConcurrentHashMap由许多个Segment组成，每个段是一个小的hashtable   
 4.ConcurrentHashMap的读操作不加锁，写需要加锁    
 **Java容器继承关系**  
-Collection  
+Collection(root)  
 List  
- LinkedList  
- ArrayList  
- Vector  
-  Stack  
+--LinkedList  
+--ArrayList  
+--Vector  
+--Stack  
 Set  
+--HashSet  
+--TreeSet  
 Map  
- Hashtable  
- HashMap  
- WeakHashMap  
+--Hashtable  
+--HashMap  
+--WeakHashMap  
+--TreeMap  
 ####JVM 
 **JVM的结构**   
-主要包括有程序计数器、Java虚拟机栈、本地方法栈、方法区、堆。其中Java堆和方法区是线程共享的。Heap用来保存Java对象与数组等。Heap可以分为新生代与旧生代，新生代包括Eden、s0、s1区。持久代主要保存class,method,filed等对象  
+主要包括有程序计数器、Java虚拟机栈、本地方法栈、方法区、堆。其中Java堆和方法区是线程共享的。程序计数器、Java虚拟栈、本地方法栈是线程私有内存区。堆一般抛出的异常为OutofMemoryError,而栈一般抛出的异常为StackOverglowError.  
+
+Heap用来保存Java对象与数组等。Heap可以分为新生代与旧生代，新生代包括Eden、s0、s1区。持久代主要保存class,method,filed等对象  
+  
 **JVM垃圾回收机制**  
 对象的创建会在Eden区中产生，如果Eden区没有足够的空间容纳下创建的对象时，则会触发YGC，YGC的主要过程是将Eden区和From Survivor区的对象拷贝到To Survivor区中，若当To Survivor区的空间不足时，会将对象直接复制到旧生代中。在YGC时会将那些经过多次YGC扔存活的对象拷贝到旧生代中。  
+
 **ClassLoader加载类**  
 ClassLoader的功能是在程序执行时，用于加载具
 体运行的类。ClassLoader采用双亲委托模式来加载Class，在JVM运行时会产生三个ClassLoader：Bootstrap ClassLoader、Extension ClassLoader、AppClassLoader，他们之间存在一定的父子关系。具体的类加载过程时：首先委托给自己的parent ClassLoader去加载，若parent加载成功则返回，否则由parent的Parent进行加载。Parent ClassLoader都不能够加载依赖的类，则由当前使用的ClassLoader进行加载该类，若加载不到，则报错。  
@@ -41,11 +54,13 @@ ClassLoader的功能是在程序执行时，用于加载具
 ####JAVA反射&动态代理    
 **JAVA反射**  
 通过反射可以获取到任何一个已经名称Class的内部信息  
+
 **动态代理**  
 一般的情况下每个代理类编译之后都会生成一个class文件，代理类所实现的接口和方法都是被固定的，这种代理称为静态代理。而动态代理只指系统在运行时动态创建代理类。实现动态代理的方式存在两种：1.采用JDK的动态代理实现机制，JDK实现动态代理包含InvocationHandler接口与Proxy类，采用JDK的方式需要依靠接口实现，如果类没有实现接口，则不能使用JDK代理；2.采用CGLIB动态代理实现机制，对指定的目标类生成一个子类，并覆盖其中方法实现增强，因为采用的是继承方式，所以不能对final修饰的类进行代理。    
 ####Spring 
 **IOC**  
-概念：通过IOC容器，利用依赖关系注入的方式，实现对象之间的解耦   
+概念：通过IOC容器，利用依赖关系注入的方式，实现对象之间的解耦 
+  
 **AOP**：  
 面向切面的编程。AOP中几个重要的概念：切面，关注点的模块化，横切多个对象，用<aop:aspect>配置切面，切面关注具体的行为；连接点，程序执行过程中明确的点，如方法调用等；通知，在特点连接点，AOP框架执行的动作；切入点，一个通知将被英法的一系列连接点的集合；目标对象：包含连接点的对象；AOP代理：AOP框架创建的代理对象。  
 ####String操作
@@ -67,4 +82,12 @@ static:静态方法、静态变量、静态代码块、静态内部类
 final:final变量，基本类型值不能改变，引用类型引用不能改变，final类无法被继承，final方法该方法不能被扩展   
 finally：不一定被执行  
 finalize：垃圾回收，类可以实现该方法，在GC时该方法被调用。GC释放内存中的垃圾，finalize可以释放文件或者socket连接之类的资源。
+
+####Java中基本类型与包装类型的区别
+1、在Java中，一切皆对象，但八大基本类型却不是对象。  
+2、声明方式的不同，基本类型无需通过new关键字来创建，而封装类型需new关键字  
+3、存储方式及位置的不同，基本类型是直接存储变量的值保存在堆栈中能高效的存取，封装类型需要通过引用指向实例，具体的实例保存在堆中  
+4、初始值的不同，封装类型的初始值为null，基本类型的的初始值视具体的类型而定，比如int类型的初始值为0，boolean类型为false；  
+5、使用方式的不同，比如与集合类合作使用时只能使用包装类型。
+
   
