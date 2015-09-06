@@ -5,5 +5,5 @@
 3. 存储知识  
 4. Web开发  
 5. 计算机基础    
-6. 算法 (算法实现见：https://github.com/sinllychen/MyPractices) 
+6. 算法 (算法实现见：https://github.com/sinllychen/MyPractices)   
 7. 兴趣项
